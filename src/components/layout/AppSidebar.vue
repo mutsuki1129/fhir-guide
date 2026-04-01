@@ -109,7 +109,7 @@ function chapterHasActive(chapterId: string) {
   border-radius: 0;
 }
 .chapter-header:hover { color: var(--text-primary); background: var(--bg-elevated); }
-.chapter-header.active { color: #93c5fd; }
+.chapter-header.active { color: var(--color-primary); }
 .chapter-icon { font-size: 0.875rem; flex-shrink: 0; }
 .chapter-title { flex: 1; }
 .chevron { color: var(--text-muted); transition: transform 0.2s; flex-shrink: 0; }
