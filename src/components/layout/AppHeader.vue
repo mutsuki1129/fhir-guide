@@ -63,6 +63,10 @@ onMounted(checkServer)
     </nav>
 
     <div class="header-right">
+      <button class="theme-toggle" @click="settings.toggleTheme" :aria-label="settings.isDark ? '切換為亮色模式' : '切換為暗色模式'" :title="settings.isDark ? '切換為亮色模式' : '切換為暗色模式'">
+        <svg v-if="settings.isDark" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+        <svg v-else width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      </button>
       <div class="server-status" @click="checkServer" title="點擊重新檢測">
         <span
           class="status-dot"
@@ -85,8 +89,8 @@ onMounted(checkServer)
 <style scoped>
 .app-header {
   height: 52px;
-  background: #0d0d14;
-  border-bottom: 1px solid #1e293b;
+  background: var(--bg-panel);
+  border-bottom: 1px solid var(--border-color);
   display: flex;
   align-items: center;
   padding: 0 1rem;
@@ -100,10 +104,15 @@ onMounted(checkServer)
   background: none; border: none; color: #64748b; cursor: pointer; padding: 6px;
   border-radius: 6px; display: flex; align-items: center; transition: color 0.15s, background 0.15s;
 }
-.sidebar-toggle:hover { color: #e2e8f0; background: #1e293b; }
+.sidebar-toggle:hover { color: var(--text-primary); background: var(--bg-elevated); }
+.theme-toggle {
+  background: none; border: none; color: var(--text-secondary); cursor: pointer; padding: 6px;
+  border-radius: 6px; display: flex; align-items: center; transition: color 0.15s, background 0.15s;
+}
+.theme-toggle:hover { color: var(--text-primary); background: var(--bg-elevated); }
 .logo { display: flex; align-items: center; gap: 6px; text-decoration: none; }
 .logo-icon { font-size: 1.2rem; }
-.logo-text { font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; font-weight: 700; color: #e2e8f0; white-space: nowrap; }
+.logo-text { font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; font-weight: 700; color: var(--text-primary); white-space: nowrap; }
 .logo-accent { color: #3b82f6; }
 .version-badge { background: #1d4ed8; color: #bfdbfe; font-size: 0.65rem; padding: 1px 6px; border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-weight: 600; }
 
@@ -111,12 +120,12 @@ onMounted(checkServer)
 .nav-link {
   display: flex; align-items: center; gap: 5px;
   padding: 5px 12px; border-radius: 6px;
-  font-size: 0.825rem; font-weight: 500; color: #64748b;
+  font-size: 0.825rem; font-weight: 500; color: var(--text-secondary);
   text-decoration: none; transition: color 0.15s, background 0.15s;
 }
-.nav-link:hover { color: #e2e8f0; background: #1e293b; }
-.nav-link.active { color: #3b82f6; background: rgba(59,130,246,0.1); }
-.nav-link.router-link-active { color: #3b82f6; background: rgba(59,130,246,0.1); }
+.nav-link:hover { color: var(--text-primary); background: var(--bg-elevated); }
+.nav-link.active { color: var(--color-primary); background: rgba(59,130,246,0.1); }
+.nav-link.router-link-active { color: var(--color-primary); background: rgba(59,130,246,0.1); }
 
 .header-right { display: flex; align-items: center; gap: 0.75rem; flex-shrink: 0; }
 .server-status {
@@ -124,7 +133,7 @@ onMounted(checkServer)
   cursor: pointer; padding: 4px 8px; border-radius: 6px;
   transition: background 0.15s;
 }
-.server-status:hover { background: #1e293b; }
+.server-status:hover { background: var(--bg-elevated); }
 .status-dot {
   width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0;
 }
@@ -132,10 +141,10 @@ onMounted(checkServer)
 .status-dot.offline { background: #ef4444; }
 .status-dot.checking { background: #eab308; animation: pulse 1s infinite; }
 @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
-.status-label { font-size: 0.75rem; color: #64748b; }
+.status-label { font-size: 0.75rem; color: var(--text-secondary); }
 
 .progress-chip { display: flex; align-items: center; gap: 6px; }
-.progress-text { font-size: 0.75rem; color: #64748b; font-family: 'JetBrains Mono', monospace; white-space: nowrap; }
-.progress-bar { width: 60px; height: 4px; background: #1e293b; border-radius: 2px; overflow: hidden; }
+.progress-text { font-size: 0.75rem; color: var(--text-secondary); font-family: 'JetBrains Mono', monospace; white-space: nowrap; }
+.progress-bar { width: 60px; height: 4px; background: var(--border-color); border-radius: 2px; overflow: hidden; }
 .progress-fill { height: 100%; background: #3b82f6; border-radius: 2px; transition: width 0.3s ease; }
 </style>

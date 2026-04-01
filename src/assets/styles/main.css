@@ -14,6 +14,19 @@
   --border-color: #1e293b;
 }
 
+html.light {
+  --bg-primary: #f8fafc;
+  --bg-panel: #ffffff;
+  --bg-elevated: #f1f5f9;
+  --color-primary: #2563eb;
+  --color-success: #16a34a;
+  --color-error: #dc2626;
+  --color-warning: #ca8a04;
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --border-color: #e2e8f0;
+}
+
 * {
   box-sizing: border-box;
 }
