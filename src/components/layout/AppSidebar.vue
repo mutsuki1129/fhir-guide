@@ -81,8 +81,8 @@ function chapterHasActive(chapterId: string) {
 .sidebar {
   width: 260px;
   flex-shrink: 0;
-  background: #0d0d14;
-  border-right: 1px solid #1e293b;
+  background: var(--bg-deep);
+  border-right: 1px solid var(--border-color);
   overflow: hidden;
   transition: width 0.3s ease, opacity 0.3s ease;
   display: flex;
@@ -93,10 +93,10 @@ function chapterHasActive(chapterId: string) {
 .sidebar-header {
   padding: 0.875rem 1rem 0.5rem;
   display: flex; align-items: center; justify-content: space-between;
-  border-bottom: 1px solid #1e293b;
+  border-bottom: 1px solid var(--border-color);
 }
-.sidebar-title { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em; color: #475569; font-weight: 600; }
-.chapters-count { font-size: 0.7rem; color: #334155; font-family: 'JetBrains Mono', monospace; }
+.sidebar-title { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); font-weight: 600; }
+.chapters-count { font-size: 0.7rem; color: var(--border-subtle); font-family: 'JetBrains Mono', monospace; }
 
 .chapter-nav { padding: 0.5rem 0; }
 .chapter-group { margin-bottom: 2px; }
@@ -104,30 +104,30 @@ function chapterHasActive(chapterId: string) {
 .chapter-header {
   width: 100%; background: none; border: none; cursor: pointer;
   display: flex; align-items: center; gap: 8px;
-  padding: 7px 12px; text-align: left; color: #94a3b8;
+  padding: 7px 12px; text-align: left; color: var(--text-secondary);
   font-size: 0.8rem; font-weight: 500; transition: color 0.15s, background 0.15s;
   border-radius: 0;
 }
-.chapter-header:hover { color: #e2e8f0; background: rgba(255,255,255,0.04); }
+.chapter-header:hover { color: var(--text-primary); background: var(--bg-elevated); }
 .chapter-header.active { color: #93c5fd; }
 .chapter-icon { font-size: 0.875rem; flex-shrink: 0; }
 .chapter-title { flex: 1; }
-.chevron { color: #475569; transition: transform 0.2s; flex-shrink: 0; }
+.chevron { color: var(--text-muted); transition: transform 0.2s; flex-shrink: 0; }
 .chevron.open { transform: rotate(180deg); }
 
 .step-list { padding: 2px 0 4px; }
 .step-link {
   display: flex; align-items: center; gap: 8px;
   padding: 5px 12px 5px 32px;
-  text-decoration: none; color: #64748b; font-size: 0.775rem;
+  text-decoration: none; color: var(--text-dim); font-size: 0.775rem;
   transition: color 0.15s, background 0.15s;
 }
-.step-link:hover { color: #e2e8f0; background: rgba(255,255,255,0.03); }
-.step-link.active { color: #3b82f6; background: rgba(59,130,246,0.08); }
-.step-link.router-link-active { color: #3b82f6; background: rgba(59,130,246,0.08); }
+.step-link:hover { color: var(--text-primary); background: var(--bg-elevated); }
+.step-link.active { color: var(--color-primary); background: rgba(59,130,246,0.08); }
+.step-link.router-link-active { color: var(--color-primary); background: rgba(59,130,246,0.08); }
 
 .step-check { width: 14px; height: 14px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-.step-dot { width: 5px; height: 5px; border-radius: 50%; background: #334155; display: block; }
+.step-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--border-subtle); display: block; }
 .step-title { flex: 1; line-height: 1.4; }
 
 /* Accordion animation */

@@ -25,5 +25,5 @@ const settings = useSettingsStore()
 <style scoped>
 .app-layout { display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
 .app-body { display: flex; flex: 1; overflow: hidden; }
-.app-main { flex: 1; overflow-y: auto; background: #0a0a0f; }
+.app-main { flex: 1; overflow-y: auto; background: var(--bg-primary); }
 </style>

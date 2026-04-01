@@ -130,50 +130,50 @@ const features = [
 .hero { text-align: center; padding: 2rem 0; }
 .hero-badge { display: inline-block; background: rgba(59,130,246,0.1); color: #60a5fa; border: 1px solid rgba(59,130,246,0.25); border-radius: 20px; padding: 4px 14px; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.06em; margin-bottom: 1.25rem; font-family: 'JetBrains Mono', monospace; }
 .hero-title { font-family: 'JetBrains Mono', monospace; margin: 0 0 1rem; line-height: 1.2; }
-.hero-title-main { display: block; font-size: 3rem; font-weight: 700; color: #3b82f6; }
-.hero-title-sub { display: block; font-size: 1.75rem; font-weight: 400; color: #94a3b8; }
-.hero-desc { color: #64748b; font-size: 1rem; line-height: 1.75; max-width: 600px; margin: 0 auto 2rem; }
+.hero-title-main { display: block; font-size: 3rem; font-weight: 700; color: var(--color-primary); }
+.hero-title-sub { display: block; font-size: 1.75rem; font-weight: 400; color: var(--text-secondary); }
+.hero-desc { color: var(--text-dim); font-size: 1rem; line-height: 1.75; max-width: 600px; margin: 0 auto 2rem; }
 .hero-actions { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
 .btn-primary { padding: 10px 28px; background: #1d4ed8; color: #e2e8f0; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 0.9rem; transition: background 0.15s; }
 .btn-primary:hover { background: #2563eb; }
-.btn-secondary { padding: 10px 28px; background: #1e293b; color: #94a3b8; border-radius: 8px; text-decoration: none; font-weight: 500; font-size: 0.9rem; border: 1px solid #334155; transition: all 0.15s; }
-.btn-secondary:hover { color: #e2e8f0; border-color: #475569; }
+.btn-secondary { padding: 10px 28px; background: var(--border-color); color: var(--text-secondary); border-radius: 8px; text-decoration: none; font-weight: 500; font-size: 0.9rem; border: 1px solid var(--border-subtle); transition: all 0.15s; }
+.btn-secondary:hover { color: var(--text-primary); border-color: var(--text-muted); }
 
 /* Progress card */
-.progress-card { background: #13131a; border: 1px solid rgba(59,130,246,0.2); border-radius: 12px; padding: 1.25rem 1.5rem; }
+.progress-card { background: var(--bg-panel); border: 1px solid rgba(59,130,246,0.2); border-radius: 12px; padding: 1.25rem 1.5rem; }
 .progress-card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.75rem; }
-.progress-card-title { font-size: 0.875rem; font-weight: 600; color: #e2e8f0; }
-.progress-percent { font-family: 'JetBrains Mono', monospace; font-size: 1rem; font-weight: 700; color: #3b82f6; }
-.progress-track { height: 6px; background: #1e293b; border-radius: 3px; overflow: hidden; }
+.progress-card-title { font-size: 0.875rem; font-weight: 600; color: var(--text-primary); }
+.progress-percent { font-family: 'JetBrains Mono', monospace; font-size: 1rem; font-weight: 700; color: var(--color-primary); }
+.progress-track { height: 6px; background: var(--border-color); border-radius: 3px; overflow: hidden; }
 .progress-track-fill { height: 100%; background: linear-gradient(90deg, #1d4ed8, #3b82f6); border-radius: 3px; transition: width 0.5s ease; }
-.progress-detail { margin: 0.5rem 0 0; font-size: 0.8rem; color: #64748b; }
+.progress-detail { margin: 0.5rem 0 0; font-size: 0.8rem; color: var(--text-dim); }
 
 /* Features */
 .features-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; }
-.feature-card { background: #13131a; border: 1px solid #1e293b; border-radius: 12px; padding: 1.25rem; text-decoration: none; display: flex; align-items: center; gap: 1rem; transition: border-color 0.15s, background 0.15s; }
-.feature-card:hover { border-color: #334155; background: #1a1a24; }
+.feature-card { background: var(--bg-panel); border: 1px solid var(--border-color); border-radius: 12px; padding: 1.25rem; text-decoration: none; display: flex; align-items: center; gap: 1rem; transition: border-color 0.15s, background 0.15s; }
+.feature-card:hover { border-color: var(--border-subtle); background: var(--bg-elevated); }
 .feature-icon { font-size: 1.75rem; flex-shrink: 0; }
 .feature-body { flex: 1; }
-.feature-title { font-size: 0.9rem; font-weight: 600; color: #e2e8f0; margin: 0 0 4px; }
-.feature-desc { font-size: 0.8rem; color: #64748b; margin: 0; line-height: 1.5; }
-.feature-arrow { color: #334155; font-size: 1.2rem; transition: color 0.15s; }
-.feature-card:hover .feature-arrow { color: #3b82f6; }
+.feature-title { font-size: 0.9rem; font-weight: 600; color: var(--text-primary); margin: 0 0 4px; }
+.feature-desc { font-size: 0.8rem; color: var(--text-dim); margin: 0; line-height: 1.5; }
+.feature-arrow { color: var(--border-subtle); font-size: 1.2rem; transition: color 0.15s; }
+.feature-card:hover .feature-arrow { color: var(--color-primary); }
 
 /* Chapters */
 .chapters-section {}
-.section-title { font-family: 'JetBrains Mono', monospace; font-size: 1rem; color: #94a3b8; margin: 0 0 1rem; font-weight: 600; }
+.section-title { font-family: 'JetBrains Mono', monospace; font-size: 1rem; color: var(--text-secondary); margin: 0 0 1rem; font-weight: 600; }
 .chapters-list { display: flex; flex-direction: column; gap: 4px; }
-.chapter-card { display: flex; align-items: center; gap: 12px; padding: 10px 14px; background: #0d0d14; border: 1px solid #1e293b; border-radius: 8px; text-decoration: none; transition: all 0.15s; }
-.chapter-card:hover { border-color: #334155; background: #13131a; }
+.chapter-card { display: flex; align-items: center; gap: 12px; padding: 10px 14px; background: var(--bg-deep); border: 1px solid var(--border-color); border-radius: 8px; text-decoration: none; transition: all 0.15s; }
+.chapter-card:hover { border-color: var(--border-subtle); background: var(--bg-panel); }
 .chapter-icon-lg { font-size: 1.1rem; }
 .chapter-info { flex: 1; display: flex; align-items: center; gap: 8px; }
-.chapter-name { font-size: 0.85rem; color: #94a3b8; }
-.chapter-steps { font-size: 0.75rem; color: #475569; font-family: 'JetBrains Mono', monospace; }
-.chapter-arrow { color: #334155; font-size: 1.2rem; }
+.chapter-name { font-size: 0.85rem; color: var(--text-secondary); }
+.chapter-steps { font-size: 0.75rem; color: var(--text-muted); font-family: 'JetBrains Mono', monospace; }
+.chapter-arrow { color: var(--border-subtle); font-size: 1.2rem; }
 
 /* Stack */
 .stack-section { text-align: center; }
-.stack-label { font-size: 0.75rem; color: #475569; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 0.75rem; }
+.stack-label { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 0.75rem; }
 .stack-badges { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
-.badge { background: #1e293b; color: #64748b; font-size: 0.75rem; padding: 4px 12px; border-radius: 20px; font-family: 'JetBrains Mono', monospace; border: 1px solid #334155; }
+.badge { background: var(--border-color); color: var(--text-dim); font-size: 0.75rem; padding: 4px 12px; border-radius: 20px; font-family: 'JetBrains Mono', monospace; border: 1px solid var(--border-subtle); }
 </style>

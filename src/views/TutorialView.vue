@@ -77,16 +77,16 @@ watch([chapterId, stepId], loadContent, { immediate: true })
   display: flex; align-items: center; gap: 8px;
   margin-bottom: 2rem; font-size: 0.8rem;
 }
-.crumb-chapter { color: #64748b; }
-.crumb-step { color: #94a3b8; }
+.crumb-chapter { color: var(--text-dim); }
+.crumb-step { color: var(--text-secondary); }
 .tutorial-loading {
   display: flex; align-items: center; gap: 12px;
-  color: #64748b; padding: 4rem; justify-content: center;
+  color: var(--text-dim); padding: 4rem; justify-content: center;
 }
 .spinner {
-  width: 20px; height: 20px; border: 2px solid #1e293b;
-  border-top-color: #3b82f6; border-radius: 50%; animation: spin 0.8s linear infinite;
+  width: 20px; height: 20px; border: 2px solid var(--border-color);
+  border-top-color: var(--color-primary); border-radius: 50%; animation: spin 0.8s linear infinite;
 }
 @keyframes spin { to { transform: rotate(360deg); } }
-.tutorial-error { color: #ef4444; padding: 2rem; text-align: center; }
+.tutorial-error { color: var(--color-error); padding: 2rem; text-align: center; }
 </style>
