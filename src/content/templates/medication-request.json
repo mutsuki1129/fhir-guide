@@ -1,0 +1,123 @@
+{
+  "resourceType": "MedicationRequest",
+  "id": "tw-med-001",
+  "meta": {
+    "profile": ["https://twcore.mohw.gov.tw/ig/twcore/StructureDefinition/MedicationRequest-twcore"]
+  },
+  "text": {
+    "status": "generated",
+    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\">Amlodipine 5mg 每天一次</div>"
+  },
+  "identifier": [
+    {
+      "system": "https://hospital.example.com/prescription",
+      "value": "RX-20240115-001"
+    }
+  ],
+  "status": "active",
+  "intent": "order",
+  "category": [
+    {
+      "coding": [
+        {
+          "system": "http://terminology.hl7.org/CodeSystem/medicationrequest-category",
+          "code": "outpatient",
+          "display": "Outpatient"
+        }
+      ]
+    }
+  ],
+  "medicationCodeableConcept": {
+    "coding": [
+      {
+        "system": "https://www.nhi.gov.tw/drugcode",
+        "code": "AC37100100",
+        "display": "Amlodipine 5mg Tab"
+      },
+      {
+        "system": "http://www.whocc.no/atc",
+        "code": "C08CA01",
+        "display": "Amlodipine"
+      }
+    ],
+    "text": "Amlodipine 5mg 錠（苯磺酸氨氯地平）"
+  },
+  "subject": {
+    "reference": "Patient/tw-patient-001",
+    "display": "王大明"
+  },
+  "encounter": {
+    "reference": "Encounter/tw-enc-001"
+  },
+  "authoredOn": "2024-01-15",
+  "requester": {
+    "reference": "Practitioner/doctor-001",
+    "display": "李醫師"
+  },
+  "reasonReference": [
+    {
+      "reference": "Condition/tw-cond-001",
+      "display": "高血壓"
+    }
+  ],
+  "dosageInstruction": [
+    {
+      "text": "每天一次，每次一顆，口服",
+      "timing": {
+        "repeat": {
+          "frequency": 1,
+          "period": 1,
+          "periodUnit": "d",
+          "when": ["MORN"]
+        }
+      },
+      "route": {
+        "coding": [
+          {
+            "system": "http://snomed.info/sct",
+            "code": "26643006",
+            "display": "Oral Route"
+          }
+        ]
+      },
+      "doseAndRate": [
+        {
+          "type": {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/dose-rate-type",
+                "code": "ordered",
+                "display": "Ordered"
+              }
+            ]
+          },
+          "doseQuantity": {
+            "value": 1,
+            "unit": "顆",
+            "system": "http://unitsofmeasure.org",
+            "code": "{tablet}"
+          }
+        }
+      ]
+    }
+  ],
+  "dispenseRequest": {
+    "validityPeriod": {
+      "start": "2024-01-15",
+      "end": "2024-04-15"
+    },
+    "numberOfRepeatsAllowed": 2,
+    "quantity": {
+      "value": 30,
+      "unit": "顆",
+      "system": "http://unitsofmeasure.org",
+      "code": "{tablet}"
+    },
+    "expectedSupplyDuration": {
+      "value": 30,
+      "unit": "days",
+      "system": "http://unitsofmeasure.org",
+      "code": "d"
+    }
+  }
+}

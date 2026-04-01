@@ -1,0 +1,82 @@
+{
+  "resourceType": "Condition",
+  "id": "tw-cond-001",
+  "meta": {
+    "profile": ["https://twcore.mohw.gov.tw/ig/twcore/StructureDefinition/Condition-twcore"]
+  },
+  "text": {
+    "status": "generated",
+    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\">高血壓（確認中）</div>"
+  },
+  "clinicalStatus": {
+    "coding": [
+      {
+        "system": "http://terminology.hl7.org/CodeSystem/condition-clinical",
+        "code": "active",
+        "display": "Active"
+      }
+    ]
+  },
+  "verificationStatus": {
+    "coding": [
+      {
+        "system": "http://terminology.hl7.org/CodeSystem/condition-ver-status",
+        "code": "confirmed",
+        "display": "Confirmed"
+      }
+    ]
+  },
+  "category": [
+    {
+      "coding": [
+        {
+          "system": "http://terminology.hl7.org/CodeSystem/condition-category",
+          "code": "encounter-diagnosis",
+          "display": "Encounter Diagnosis"
+        }
+      ]
+    }
+  ],
+  "severity": {
+    "coding": [
+      {
+        "system": "http://snomed.info/sct",
+        "code": "6736007",
+        "display": "Moderate"
+      }
+    ]
+  },
+  "code": {
+    "coding": [
+      {
+        "system": "http://snomed.info/sct",
+        "code": "38341003",
+        "display": "Hypertension"
+      },
+      {
+        "system": "http://hl7.org/fhir/sid/icd-10",
+        "code": "I10",
+        "display": "Essential (primary) hypertension"
+      }
+    ],
+    "text": "高血壓"
+  },
+  "subject": {
+    "reference": "Patient/tw-patient-001",
+    "display": "王大明"
+  },
+  "encounter": {
+    "reference": "Encounter/tw-enc-001"
+  },
+  "onsetDateTime": "2020-06-01",
+  "recordedDate": "2024-01-15",
+  "recorder": {
+    "reference": "Practitioner/doctor-001",
+    "display": "李醫師"
+  },
+  "note": [
+    {
+      "text": "患者有高血壓家族史，目前以藥物控制中，血壓控制穩定。"
+    }
+  ]
+}
