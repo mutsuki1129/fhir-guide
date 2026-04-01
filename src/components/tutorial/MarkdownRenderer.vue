@@ -8,22 +8,27 @@ const props = defineProps<{ content: string }>()
 
 let shiki: Awaited<ReturnType<typeof createHighlighter>> | null = null
 
+function escapeHtml(str: string): string {
+  return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
+}
+
 const md = new MarkdownIt({
   html: true,
   linkify: true,
   typographer: true,
-  highlight(str, lang) {
+  highlight(str: string, lang: string): string {
     if (shiki && lang) {
       try {
         return shiki.codeToHtml(str, { lang, theme: 'github-dark' })
       } catch { /* unsupported lang — fallthrough */ }
     }
-    return `<pre class="shiki-fallback"><code>${md.utils.escapeHtml(str)}</code></pre>`
+    return `<pre class="shiki-fallback"><code>${escapeHtml(str)}</code></pre>`
   }
 }).use(markdownItAnchor, { permalink: markdownItAnchor.permalink.headerLink() })
 
 // Custom containers (:::tip, :::warning, :::danger)
-md.core.ruler.push('custom_container', (state) => {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+md.core.ruler.push('custom_container', (state: any) => {
   const tokens = state.tokens
   for (let i = 0; i < tokens.length; i++) {
     if (tokens[i].type === 'inline') {
