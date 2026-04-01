@@ -57,24 +57,25 @@ function markAndNext() {
 <style scoped>
 .step-nav {
   display: flex; align-items: center; justify-content: space-between;
-  padding: 1.25rem 0; border-top: 1px solid #1e293b; margin-top: 2rem; gap: 1rem;
+  padding: 1.25rem 0; border-top: 1px solid var(--border-color); margin-top: 2rem; gap: 1rem;
 }
 .nav-btn {
   display: flex; align-items: center; gap: 6px;
   padding: 8px 14px; border-radius: 8px; text-decoration: none;
-  font-size: 0.8rem; color: #64748b; border: 1px solid #1e293b;
-  background: #13131a; transition: all 0.15s; max-width: 200px;
+  font-size: 0.8rem; font-weight: 500; color: #fff;
+  border: none; background: var(--color-primary);
+  transition: all 0.15s; max-width: 200px;
 }
-.nav-btn:hover { color: #e2e8f0; border-color: #334155; background: #1e293b; }
+.nav-btn:hover { opacity: 0.85; }
 .nav-btn span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .nav-btn-placeholder { min-width: 80px; }
 .mark-btn {
   display: flex; align-items: center; gap: 6px;
   padding: 8px 20px; border-radius: 8px;
   font-size: 0.85rem; font-weight: 500; cursor: pointer; border: none;
-  background: #1d4ed8; color: #e2e8f0; transition: all 0.15s; white-space: nowrap;
+  background: var(--color-primary); color: #fff; transition: all 0.15s; white-space: nowrap;
 }
-.mark-btn:hover { background: #2563eb; }
+.mark-btn:hover { opacity: 0.85; }
 .mark-btn.done { background: rgba(34,197,94,0.15); color: #4ade80; border: 1px solid rgba(34,197,94,0.3); }
 .mark-btn.done:hover { background: rgba(34,197,94,0.25); }
 </style>
