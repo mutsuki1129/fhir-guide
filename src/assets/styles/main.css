@@ -1,0 +1,95 @@
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Noto+Sans+TC:wght@300;400;500;700&family=Inter:wght@300;400;500;600&family=Fira+Code:wght@400;500&display=swap');
+@import "tailwindcss";
+
+:root {
+  --bg-primary: #0a0a0f;
+  --bg-panel: #13131a;
+  --bg-elevated: #1a1a24;
+  --color-primary: #3b82f6;
+  --color-success: #22c55e;
+  --color-error: #ef4444;
+  --color-warning: #eab308;
+  --text-primary: #e2e8f0;
+  --text-secondary: #94a3b8;
+  --border-color: #1e293b;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: 'Inter', 'Noto Sans TC', sans-serif;
+  height: 100%;
+  overflow: hidden;
+}
+
+#app {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--bg-panel); }
+::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #475569; }
+
+/* Terminal-style code blocks */
+.terminal-block {
+  background: #0d1117;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid var(--border-color);
+}
+.terminal-header {
+  background: #161b22;
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.terminal-dot {
+  width: 12px; height: 12px; border-radius: 50%;
+}
+.terminal-dot.red { background: #ff5f57; }
+.terminal-dot.yellow { background: #febc2e; }
+.terminal-dot.green { background: #28c840; }
+
+/* Markdown content styles */
+.markdown-content h1 { font-family: 'JetBrains Mono', monospace; font-size: 1.8rem; color: #e2e8f0; margin-bottom: 1rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem; }
+.markdown-content h2 { font-family: 'JetBrains Mono', monospace; font-size: 1.4rem; color: #cbd5e1; margin: 1.5rem 0 0.75rem; }
+.markdown-content h3 { font-size: 1.1rem; color: #94a3b8; margin: 1.25rem 0 0.5rem; }
+.markdown-content p { line-height: 1.75; color: #cbd5e1; margin-bottom: 1rem; }
+.markdown-content code { font-family: 'Fira Code', monospace; background: #1e293b; color: #7dd3fc; padding: 2px 6px; border-radius: 4px; font-size: 0.875em; }
+.markdown-content pre { background: #0d1117; border: 1px solid var(--border-color); border-radius: 8px; padding: 1rem; overflow-x: auto; margin: 1rem 0; }
+.markdown-content pre code { background: none; color: inherit; padding: 0; }
+.markdown-content ul, .markdown-content ol { color: #cbd5e1; padding-left: 1.5rem; margin-bottom: 1rem; }
+.markdown-content li { margin-bottom: 0.4rem; line-height: 1.7; }
+.markdown-content blockquote { border-left: 3px solid var(--color-primary); padding-left: 1rem; color: var(--text-secondary); margin: 1rem 0; }
+.markdown-content table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+.markdown-content th { background: #1e293b; color: #e2e8f0; padding: 8px 12px; text-align: left; border: 1px solid var(--border-color); }
+.markdown-content td { padding: 8px 12px; border: 1px solid var(--border-color); color: #cbd5e1; }
+.markdown-content tr:nth-child(even) td { background: #0f172a; }
+.markdown-content a { color: var(--color-primary); text-decoration: underline; }
+
+/* Custom containers */
+.markdown-content .tip { background: rgba(59,130,246,0.1); border: 1px solid rgba(59,130,246,0.3); border-radius: 8px; padding: 1rem; margin: 1rem 0; }
+.markdown-content .warning { background: rgba(234,179,8,0.1); border: 1px solid rgba(234,179,8,0.3); border-radius: 8px; padding: 1rem; margin: 1rem 0; }
+.markdown-content .danger { background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.3); border-radius: 8px; padding: 1rem; margin: 1rem 0; }
+.markdown-content .tip-title, .markdown-content .warning-title, .markdown-content .danger-title { font-weight: 600; margin-bottom: 0.5rem; font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.05em; }
+.markdown-content .tip-title { color: #60a5fa; }
+.markdown-content .warning-title { color: #fbbf24; }
+.markdown-content .danger-title { color: #f87171; }
+
+/* Transition animations */
+.fade-enter-active, .fade-leave-active { transition: opacity 0.2s ease; }
+.fade-enter-from, .fade-leave-to { opacity: 0; }
+.slide-enter-active, .slide-leave-active { transition: transform 0.3s ease, opacity 0.3s ease; }
+.slide-enter-from { transform: translateX(-100%); opacity: 0; }
+.slide-leave-to { transform: translateX(-100%); opacity: 0; }
