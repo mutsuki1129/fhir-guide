@@ -69,6 +69,10 @@ export const chapters: Chapter[] = [
       { id: '01-smart-overview', title: 'SMART on FHIR 概覽', chapterId: '06-security', contentPath: '06-security/01-smart-overview' },
       { id: '02-oauth2', title: 'OAuth 2.0 流程', chapterId: '06-security', contentPath: '06-security/02-oauth2' },
       { id: '03-scopes', title: 'Scopes 與權限控制', chapterId: '06-security', contentPath: '06-security/03-scopes' },
+      { id: '04-encryption-tls', title: 'TLS 加密與通信安全', chapterId: '06-security', contentPath: '06-security/04-encryption' },
+      { id: '05-security-labels', title: '安全標籤與訪問控制', chapterId: '06-security', contentPath: '06-security/05-security-labels' },
+      { id: '06-audit-logging', title: '稽核日誌與監控', chapterId: '06-security', contentPath: '06-security/06-audit-logging' },
+      { id: '07-best-practices', title: ' 安全最佳實踐與檢查清單', chapterId: '06-security', contentPath: '06-security/07-best-practices' },
     ]
   },
   {
