@@ -2,13 +2,24 @@
 import { ref, watch, onMounted } from 'vue'
 import MarkdownIt from 'markdown-it'
 import markdownItAnchor from 'markdown-it-anchor'
+import { createHighlighter } from 'shiki'
 
 const props = defineProps<{ content: string }>()
+
+let shiki: Awaited<ReturnType<typeof createHighlighter>> | null = null
 
 const md = new MarkdownIt({
   html: true,
   linkify: true,
-  typographer: true
+  typographer: true,
+  highlight(str, lang) {
+    if (shiki && lang) {
+      try {
+        return shiki.codeToHtml(str, { lang, theme: 'github-dark' })
+      } catch { /* unsupported lang — fallthrough */ }
+    }
+    return `<pre class="shiki-fallback"><code>${md.utils.escapeHtml(str)}</code></pre>`
+  }
 }).use(markdownItAnchor, { permalink: markdownItAnchor.permalink.headerLink() })
 
 // Custom containers (:::tip, :::warning, :::danger)
@@ -29,9 +40,20 @@ md.core.ruler.push('custom_container', (state) => {
 })
 
 const rendered = ref('')
-watch(() => props.content, (val) => {
-  rendered.value = md.render(val || '')
-}, { immediate: true })
+
+function render() {
+  rendered.value = md.render(props.content || '')
+}
+
+watch(() => props.content, render, { immediate: true })
+
+onMounted(async () => {
+  shiki = await createHighlighter({
+    themes: ['github-dark'],
+    langs: ['typescript', 'javascript', 'python', 'bash', 'json', 'yaml', 'csharp', 'java', 'xml', 'http', 'sql', 'shell']
+  })
+  render()
+})
 </script>
 
 <template>

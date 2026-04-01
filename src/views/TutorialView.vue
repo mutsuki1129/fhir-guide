@@ -3,7 +3,9 @@ import { ref, watch, computed } from 'vue'
 import { useRoute } from 'vue-router'
 import MarkdownRenderer from '@/components/tutorial/MarkdownRenderer.vue'
 import StepNavigator from '@/components/tutorial/StepNavigator.vue'
+import LanguageSwitcher from '@/components/code-examples/LanguageSwitcher.vue'
 import { chapters } from '@/data/chapters'
+import type { CodeExample } from '@/types'
 
 const route = useRoute()
 
@@ -13,9 +15,36 @@ const stepId = computed(() => route.params.stepId as string)
 const content = ref('')
 const loading = ref(false)
 const error = ref('')
+const codeExamples = ref<CodeExample[]>([])
 
 // Dynamically import markdown content
 const contentModules = import.meta.glob('/src/content/chapters/**/*.md', { query: '?raw', import: 'default' })
+
+// Dynamically import code examples
+const exampleModules = import.meta.glob('/src/content/code-examples/**/*', { query: '?raw', import: 'default' })
+
+// Map step keys to example folders
+const exampleFolderMap: Record<string, string> = {
+  '03-resources/02-patient': 'create-patient',
+}
+
+const extToLang: Record<string, CodeExample['language']> = {
+  '.ts': 'javascript',
+  '.py': 'python',
+  '.sh': 'curl',
+  '.cs': 'csharp',
+  '.java': 'java',
+}
+
+const langLabels: Record<string, string> = {
+  javascript: 'JavaScript',
+  python: 'Python',
+  curl: 'cURL',
+  csharp: 'C#',
+  java: 'Java',
+}
+
+const langOrder: CodeExample['language'][] = ['javascript', 'python', 'curl', 'csharp', 'java']
 
 async function loadContent() {
   loading.value = true
@@ -37,10 +66,35 @@ async function loadContent() {
   }
 }
 
+async function loadExamples(cId: string, sId: string) {
+  const key = `${cId}/${sId}`
+  const folder = exampleFolderMap[key]
+  if (!folder) { codeExamples.value = []; return }
+
+  const seen = new Set<string>()
+  const examples: CodeExample[] = []
+
+  for (const [path, loader] of Object.entries(exampleModules)) {
+    if (!path.includes(`/code-examples/${folder}/`)) continue
+    const ext = path.match(/(\.[^./]+)$/)?.[1] ?? ''
+    const lang = extToLang[ext]
+    if (!lang || seen.has(lang)) continue   // skip .js when .ts exists
+    seen.add(lang)
+    const code = await loader() as string
+    examples.push({ language: lang, label: langLabels[lang] ?? lang, code })
+  }
+
+  examples.sort((a, b) => langOrder.indexOf(a.language) - langOrder.indexOf(b.language))
+  codeExamples.value = examples
+}
+
 const chapter = computed(() => chapters.find(c => c.id === chapterId.value))
 const step = computed(() => chapter.value?.steps.find(s => s.id === stepId.value))
 
-watch([chapterId, stepId], loadContent, { immediate: true })
+watch([chapterId, stepId], ([cId, sId]) => {
+  loadContent()
+  loadExamples(cId, sId)
+}, { immediate: true })
 </script>
 
 <template>
@@ -53,6 +107,10 @@ watch([chapterId, stepId], loadContent, { immediate: true })
 
     <div class="tutorial-content" v-if="!loading && !error">
       <MarkdownRenderer :content="content" />
+      <div v-if="codeExamples.length > 0" class="examples-section">
+        <h2 class="examples-title">程式碼範例</h2>
+        <LanguageSwitcher :examples="codeExamples" />
+      </div>
       <StepNavigator :chapter-id="chapterId" :step-id="stepId" />
     </div>
 
@@ -89,4 +147,14 @@ watch([chapterId, stepId], loadContent, { immediate: true })
 }
 @keyframes spin { to { transform: rotate(360deg); } }
 .tutorial-error { color: var(--color-error); padding: 2rem; text-align: center; }
+.examples-section { margin-top: 2.5rem; }
+.examples-title {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin: 0 0 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--border-color);
+}
 </style>

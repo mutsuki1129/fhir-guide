@@ -4,6 +4,7 @@ import { useRoute } from 'vue-router'
 import { chapters } from '@/data/chapters'
 import { useProgressStore } from '@/stores/progress'
 import { useSettingsStore } from '@/stores/settings'
+import ProgressTracker from '@/components/tutorial/ProgressTracker.vue'
 
 const route = useRoute()
 const progress = useProgressStore()
@@ -73,6 +74,9 @@ function chapterHasActive(chapterId: string) {
           </Transition>
         </div>
       </nav>
+      <div class="sidebar-footer">
+        <ProgressTracker />
+      </div>
     </div>
   </aside>
 </template>
@@ -89,7 +93,8 @@ function chapterHasActive(chapterId: string) {
   flex-direction: column;
 }
 .sidebar.collapsed { width: 0; opacity: 0; }
-.sidebar-inner { width: 260px; overflow-y: auto; height: 100%; }
+.sidebar-inner { width: 260px; overflow-y: auto; height: 100%; display: flex; flex-direction: column; }
+.chapter-nav { flex: 1; }
 .sidebar-header {
   padding: 0.875rem 1rem 0.5rem;
   display: flex; align-items: center; justify-content: space-between;
@@ -129,6 +134,8 @@ function chapterHasActive(chapterId: string) {
 .step-check { width: 14px; height: 14px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
 .step-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--border-subtle); display: block; }
 .step-title { flex: 1; line-height: 1.4; }
+
+.sidebar-footer { padding: 0.75rem; border-top: 1px solid var(--border-color); flex-shrink: 0; }
 
 /* Accordion animation */
 .accordion-enter-active, .accordion-leave-active { transition: max-height 0.25s ease, opacity 0.25s ease; overflow: hidden; max-height: 400px; }
