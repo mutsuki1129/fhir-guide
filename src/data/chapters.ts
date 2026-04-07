@@ -84,6 +84,18 @@ export const chapters: Chapter[] = [
       { id: '02-bundle-import', title: '用 Bundle 批次匯入資料', chapterId: '07-project', contentPath: '07-project/02-bundle-import' },
       { id: '03-patient-frontend', title: '建立簡易病患查詢前端', chapterId: '07-project', contentPath: '07-project/03-patient-frontend' },
     ]
+  },
+  {
+    id: '08-fhir-foundry',
+    title: 'FHIR Foundry — HL7 的 FHIR 工具生態系',
+    icon: '🏭',
+    steps: [
+      { id: '01-what-is-foundry', title: '什麼是 FHIR Foundry？', chapterId: '08-fhir-foundry', contentPath: '08-fhir-foundry/01-what-is-foundry' },
+      { id: '02-navigating-gallery', title: '瀏覽 Foundry Gallery', chapterId: '08-fhir-foundry', contentPath: '08-fhir-foundry/02-navigating-gallery' },
+      { id: '03-launching-products', title: '啟動與部署產品', chapterId: '08-fhir-foundry', contentPath: '08-fhir-foundry/03-launching-products' },
+      { id: '04-foundry-workflow', title: '開發者工作流程', chapterId: '08-fhir-foundry', contentPath: '08-fhir-foundry/04-foundry-workflow' },
+      { id: '05-practical-exercises', title: '實作練習', chapterId: '08-fhir-foundry', contentPath: '08-fhir-foundry/05-practical-exercises' },
+    ]
   }
 ]
 

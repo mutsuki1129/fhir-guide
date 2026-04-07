@@ -6,7 +6,9 @@ const settings = useSettingsStore()
 
 const servers = [
   { label: 'HAPI FHIR Public (R4)', url: 'https://hapi.fhir.org/baseR4' },
-  { label: 'Local Docker HAPI', url: 'http://localhost:8080/fhir' }
+  { label: 'Local Docker HAPI', url: 'http://localhost:8080/fhir' },
+  { label: 'FHIR Candle (Foundry)', url: 'http://localhost:8080/fhir/r4' },
+  { label: 'WildFHIR Public', url: 'https://wildfhir.aegis.net/fhir4-0-1' }
 ]
 
 const customInput = ref('')
