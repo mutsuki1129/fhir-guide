@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch, onMounted, nextTick } from 'vue'
+import { ref, watch, onMounted } from 'vue'
 import MarkdownIt from 'markdown-it'
 import markdownItAnchor from 'markdown-it-anchor'
 import { createHighlighter } from 'shiki'
@@ -89,8 +89,8 @@ function applyHighlight() {
     NodeFilter.SHOW_TEXT,
     {
       acceptNode(node) {
-        // Skip code blocks to avoid breaking syntax highlighting
-        if ((node.parentElement as Element)?.closest('pre, code')) return NodeFilter.FILTER_REJECT
+        // Include all text nodes (including code blocks) — shiki wraps each
+        // token in its own <span> so wrapping its text in <mark> is safe
         return node.textContent?.toLowerCase().includes(qLower)
           ? NodeFilter.FILTER_ACCEPT
           : NodeFilter.FILTER_REJECT
@@ -126,20 +126,13 @@ function applyHighlight() {
   }
 
   if (firstMark) {
-    nextTick(() => firstMark!.scrollIntoView({ behavior: 'smooth', block: 'center' }))
+    firstMark.scrollIntoView({ behavior: 'smooth', block: 'center' })
   }
 }
 
-// Re-highlight whenever rendered HTML or the query changes
-watch(rendered, async () => {
-  await nextTick()
-  applyHighlight()
-})
-
-watch(highlightQuery, async () => {
-  await nextTick()
-  applyHighlight()
-})
+// flush:'post' ensures the DOM is fully updated before we manipulate it
+watch(rendered, applyHighlight, { flush: 'post' })
+watch(highlightQuery, applyHighlight, { flush: 'post' })
 </script>
 
 <template>
