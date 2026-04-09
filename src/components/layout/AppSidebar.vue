@@ -5,6 +5,7 @@ import { chapters } from '@/data/chapters'
 import { useProgressStore } from '@/stores/progress'
 import { useSettingsStore } from '@/stores/settings'
 import { useContentSearch } from '@/composables/useContentSearch'
+import { useSearchHighlight } from '@/composables/useSearchHighlight'
 import ProgressTracker from '@/components/tutorial/ProgressTracker.vue'
 
 const route = useRoute()
@@ -14,6 +15,7 @@ const settings = useSettingsStore()
 
 const expandedChapters = ref<Set<string>>(new Set(['01-basics', '02-setup']))
 const { query, results, currentIndex, next, prev, current } = useContentSearch()
+const { setHighlight, clearHighlight } = useSearchHighlight()
 
 function toggleChapter(id: string) {
   if (expandedChapters.value.has(id)) {
@@ -54,6 +56,7 @@ function isChapterExpanded(id: string) {
 
 function navigateToResult(r: ReturnType<typeof current>) {
   if (!r) return
+  setHighlight(query.value.trim())
   router.push(`/tutorial/${r.chapterId}/${r.stepId}`)
 }
 
@@ -70,6 +73,7 @@ function onSearchKeydown(e: KeyboardEvent) {
 
 function clearSearch() {
   query.value = ''
+  clearHighlight()
 }
 
 function selectResult(idx: number) {
