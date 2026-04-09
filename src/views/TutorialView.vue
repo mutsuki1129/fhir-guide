@@ -25,7 +25,17 @@ const exampleModules = import.meta.glob('/src/content/code-examples/**/*', { que
 
 // Map step keys to example folders
 const exampleFolderMap: Record<string, string> = {
+  '02-setup/04-first-request': 'first-request',
   '03-resources/02-patient': 'create-patient',
+  '03-resources/03-observation': 'create-observation',
+  '03-resources/04-encounter': 'create-encounter',
+  '03-resources/05-condition': 'create-condition',
+  '03-resources/06-medication-request': 'create-medication-request',
+  '03-resources/07-bundle': 'create-bundle',
+  '04-search/01-basic-search': 'basic-search',
+  '05-operations/01-validate': 'validate-operation',
+  '05-operations/02-everything': 'everything-operation',
+  '08-fhir-foundry/04-foundry-workflow': 'foundry-server-interaction',
 }
 
 const extToLang: Record<string, CodeExample['language']> = {
