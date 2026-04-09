@@ -14,8 +14,12 @@ const progress = useProgressStore()
 const settings = useSettingsStore()
 
 const expandedChapters = ref<Set<string>>(new Set(['01-basics', '02-setup']))
-const { query, results, currentIndex, next, prev, current } = useContentSearch()
+const { query, results } = useContentSearch()
 const { setHighlight, clearHighlight } = useSearchHighlight()
+
+// activeIdx = last navigated result index (-1 = nothing yet)
+// This is the single source of truth for both visual highlight and navigation position.
+const activeIdx = ref(-1)
 
 function toggleChapter(id: string) {
   if (expandedChapters.value.has(id)) {
@@ -35,11 +39,11 @@ function chapterHasActive(chapterId: string) {
 
 const isSearching = computed(() => query.value.trim().length >= 2)
 
-// When a new search starts, auto-expand chapters with results
+// Reset active when query changes; auto-expand matched chapters
 watch(results, (res) => {
+  activeIdx.value = -1
   if (res.length > 0) {
-    const ids = new Set(res.map(r => r.chapterId))
-    expandedChapters.value = ids
+    expandedChapters.value = new Set(res.map(r => r.chapterId))
   }
 })
 
@@ -54,21 +58,35 @@ function isChapterExpanded(id: string) {
   return expandedChapters.value.has(id)
 }
 
-function navigateToResult(r: ReturnType<typeof current>) {
+/** Navigate to a specific result index — single entry point for all navigation */
+function goTo(idx: number) {
+  const n = results.value.length
+  if (n === 0) return
+  const i = ((idx % n) + n) % n   // safe modulo for negative values
+  const r = results.value[i]
   if (!r) return
+  activeIdx.value = i
   setHighlight(query.value.trim())
   router.push(`/tutorial/${r.chapterId}/${r.stepId}`)
 }
 
+function navNext() {
+  // If nothing visited yet start from 0, otherwise go to next
+  goTo(activeIdx.value < 0 ? 0 : activeIdx.value + 1)
+}
+
+function navPrev() {
+  goTo(activeIdx.value <= 0 ? results.value.length - 1 : activeIdx.value - 1)
+}
+
 function onSearchEnter() {
   if (!isSearching.value || results.value.length === 0) return
-  navigateToResult(current())
-  next()
+  navNext()
 }
 
 function onSearchKeydown(e: KeyboardEvent) {
-  if (e.key === 'ArrowDown') { e.preventDefault(); next() }
-  if (e.key === 'ArrowUp') { e.preventDefault(); prev() }
+  if (e.key === 'ArrowDown') { e.preventDefault(); navNext() }
+  if (e.key === 'ArrowUp') { e.preventDefault(); navPrev() }
 }
 
 function clearSearch() {
@@ -76,10 +94,12 @@ function clearSearch() {
   clearHighlight()
 }
 
+// Click on a result card → navigate immediately, single click is enough
 function selectResult(idx: number) {
-  currentIndex.value = idx
-  navigateToResult(results.value[idx])
+  goTo(idx)
 }
+
+const displayPos = computed(() => activeIdx.value >= 0 ? activeIdx.value + 1 : 0)
 </script>
 
 <template>
@@ -114,12 +134,12 @@ function selectResult(idx: number) {
       <!-- Search results counter -->
       <div v-if="isSearching" class="search-status">
         <template v-if="results.length > 0">
-          <span class="result-counter">{{ currentIndex + 1 }} / {{ results.length }} 個結果</span>
+          <span class="result-counter">{{ displayPos > 0 ? displayPos : '—' }} / {{ results.length }} 個結果</span>
           <div class="nav-hints">
-            <button class="nav-btn" @click="prev" title="上一個">
+            <button class="nav-btn" @click="navPrev" title="上一個">
               <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="18 15 12 9 6 15"/></svg>
             </button>
-            <button class="nav-btn" @click="() => { navigateToResult(current()); next() }" title="下一個 (Enter)">
+            <button class="nav-btn" @click="navNext" title="下一個 (Enter)">
               <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
             </button>
           </div>
@@ -133,7 +153,7 @@ function selectResult(idx: number) {
           v-for="(r, idx) in results"
           :key="`${r.chapterId}/${r.stepId}`"
           class="result-item"
-          :class="{ 'result-current': idx === currentIndex }"
+          :class="{ 'result-current': idx === activeIdx }"
           @click="selectResult(idx)"
         >
           <div class="result-meta">
