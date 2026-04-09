@@ -57,6 +57,12 @@ function render() {
 watch(() => props.content, render, { immediate: true })
 
 onMounted(async () => {
+  // Apply highlight from the INITIAL render (before shiki loads).
+  // This is the only chance for pages whose code blocks have no language
+  // specifier — shiki never changes their output, so `rendered` never gets a
+  // second value assignment, so watch(rendered,...) never fires after mount.
+  applyHighlight()
+
   shiki = await createHighlighter({
     themes: ['github-dark'],
     langs: ['typescript', 'javascript', 'python', 'bash', 'json', 'yaml', 'csharp', 'java', 'xml', 'http', 'sql', 'shell']
@@ -130,13 +136,11 @@ function applyHighlight() {
   }
 }
 
-// flush:'post' ensures the DOM is fully updated before we manipulate it
+// flush:'post' ensures the DOM is fully updated before we manipulate it.
 // Watch highlightVersion (not highlightQuery value) so watcher fires even when
 // the same query is reused across multiple navigations.
-// immediate:true handles the case where content is already set when this
-// component mounts (loading ends after content loads), so we don't have to
-// wait for the shiki re-render to apply the initial highlight.
-watch(rendered, applyHighlight, { flush: 'post', immediate: true })
+// Initial highlight on mount is handled explicitly in onMounted above.
+watch(rendered, applyHighlight, { flush: 'post' })
 watch(highlightVersion, applyHighlight, { flush: 'post' })
 </script>
 
