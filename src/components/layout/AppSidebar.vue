@@ -1,16 +1,18 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import { useRoute } from 'vue-router'
+import { ref, computed } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import { chapters } from '@/data/chapters'
 import { useProgressStore } from '@/stores/progress'
 import { useSettingsStore } from '@/stores/settings'
 import ProgressTracker from '@/components/tutorial/ProgressTracker.vue'
 
 const route = useRoute()
+const router = useRouter()
 const progress = useProgressStore()
 const settings = useSettingsStore()
 
 const expandedChapters = ref<Set<string>>(new Set(['01-basics', '02-setup']))
+const searchQuery = ref('')
 
 function toggleChapter(id: string) {
   if (expandedChapters.value.has(id)) {
@@ -27,6 +29,48 @@ function isActiveStep(chapterId: string, stepId: string) {
 function chapterHasActive(chapterId: string) {
   return route.params.chapterId === chapterId
 }
+
+const isSearching = computed(() => searchQuery.value.trim().length > 0)
+
+const filteredChapters = computed(() => {
+  if (!isSearching.value) return chapters
+  const q = searchQuery.value.trim().toLowerCase()
+  return chapters
+    .map(chapter => {
+      const chapterMatches = chapter.title.toLowerCase().includes(q)
+      const matchingSteps = chapter.steps.filter(s => s.title.toLowerCase().includes(q))
+      if (!chapterMatches && matchingSteps.length === 0) return null
+      return { ...chapter, steps: chapterMatches ? chapter.steps : matchingSteps }
+    })
+    .filter(Boolean) as typeof chapters
+})
+
+function highlightText(text: string) {
+  if (!isSearching.value) return text
+  const q = searchQuery.value.trim()
+  const regex = new RegExp(`(${q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi')
+  return text.replace(regex, '<mark>$1</mark>')
+}
+
+function isChapterExpanded(id: string) {
+  if (isSearching.value) return true
+  return expandedChapters.value.has(id)
+}
+
+function onSearchEnter() {
+  if (!isSearching.value) return
+  const first = filteredChapters.value[0]
+  if (!first) return
+  const step = first.steps[0]
+  if (step) {
+    router.push(`/tutorial/${first.id}/${step.id}`)
+    searchQuery.value = ''
+  }
+}
+
+function clearSearch() {
+  searchQuery.value = ''
+}
 </script>
 
 <template>
@@ -36,31 +80,53 @@ function chapterHasActive(chapterId: string) {
         <span class="sidebar-title">章節目錄</span>
         <span class="chapters-count">{{ chapters.length }} 章</span>
       </div>
+      <div class="search-box">
+        <svg class="search-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+        <input
+          v-model="searchQuery"
+          class="search-input"
+          type="text"
+          placeholder="搜尋章節...（Enter 跳轉）"
+          @keydown.enter="onSearchEnter"
+          @keydown.escape="clearSearch"
+        />
+        <button v-if="isSearching" class="search-clear" @click="clearSearch">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </div>
+      <div v-if="isSearching && filteredChapters.length === 0" class="search-empty">
+        無符合結果
+      </div>
       <nav class="chapter-nav">
-        <div v-for="chapter in chapters" :key="chapter.id" class="chapter-group">
+        <div v-for="chapter in filteredChapters" :key="chapter.id" class="chapter-group">
           <button
             class="chapter-header"
             :class="{ active: chapterHasActive(chapter.id) }"
             @click="toggleChapter(chapter.id)"
           >
             <span class="chapter-icon">{{ chapter.icon }}</span>
-            <span class="chapter-title">{{ chapter.title }}</span>
+            <span class="chapter-title" v-html="highlightText(chapter.title)"></span>
             <svg
               class="chevron"
-              :class="{ open: expandedChapters.has(chapter.id) }"
+              :class="{ open: isChapterExpanded(chapter.id) }"
               width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
             >
               <polyline points="6 9 12 15 18 9"/>
             </svg>
           </button>
           <Transition name="accordion">
-            <div v-if="expandedChapters.has(chapter.id)" class="step-list">
+            <div v-if="isChapterExpanded(chapter.id)" class="step-list">
               <router-link
                 v-for="step in chapter.steps"
                 :key="step.id"
                 :to="`/tutorial/${chapter.id}/${step.id}`"
                 class="step-link"
                 :class="{ active: isActiveStep(chapter.id, step.id) }"
+                @click="clearSearch"
               >
                 <span class="step-check">
                   <svg v-if="progress.isCompleted(chapter.id, step.id)" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="3">
@@ -68,7 +134,7 @@ function chapterHasActive(chapterId: string) {
                   </svg>
                   <span v-else class="step-dot"></span>
                 </span>
-                <span class="step-title">{{ step.title }}</span>
+                <span class="step-title" v-html="highlightText(step.title)"></span>
               </router-link>
             </div>
           </Transition>
@@ -135,6 +201,39 @@ function chapterHasActive(chapterId: string) {
 .step-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--border-subtle); display: block; }
 .step-title { flex: 1; line-height: 1.4; }
 
+.search-box {
+  display: flex; align-items: center; gap: 6px;
+  margin: 0.5rem 0.75rem 0.25rem;
+  padding: 5px 8px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  transition: border-color 0.15s;
+}
+.search-box:focus-within { border-color: var(--color-primary); }
+.search-icon { color: var(--text-muted); flex-shrink: 0; }
+.search-input {
+  flex: 1; background: none; border: none; outline: none;
+  font-size: 0.75rem; color: var(--text-primary);
+  font-family: inherit; min-width: 0;
+}
+.search-input::placeholder { color: var(--text-muted); }
+.search-clear {
+  background: none; border: none; cursor: pointer; padding: 2px;
+  color: var(--text-muted); display: flex; align-items: center;
+  border-radius: 3px; flex-shrink: 0;
+}
+.search-clear:hover { color: var(--text-primary); background: var(--border-color); }
+.search-empty {
+  font-size: 0.75rem; color: var(--text-muted);
+  text-align: center; padding: 1rem 0.75rem;
+}
+:deep(mark) {
+  background: rgba(59, 130, 246, 0.25);
+  color: var(--color-primary);
+  border-radius: 2px;
+  padding: 0 1px;
+}
 .sidebar-footer { padding: 0.75rem; border-top: 1px solid var(--border-color); flex-shrink: 0; }
 
 /* Accordion animation */
