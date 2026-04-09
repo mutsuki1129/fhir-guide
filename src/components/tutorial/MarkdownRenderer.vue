@@ -132,8 +132,11 @@ function applyHighlight() {
 
 // flush:'post' ensures the DOM is fully updated before we manipulate it
 // Watch highlightVersion (not highlightQuery value) so watcher fires even when
-// the same query is reused across multiple navigations
-watch(rendered, applyHighlight, { flush: 'post' })
+// the same query is reused across multiple navigations.
+// immediate:true handles the case where content is already set when this
+// component mounts (loading ends after content loads), so we don't have to
+// wait for the shiki re-render to apply the initial highlight.
+watch(rendered, applyHighlight, { flush: 'post', immediate: true })
 watch(highlightVersion, applyHighlight, { flush: 'post' })
 </script>
 

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, nextTick } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { chapters } from '@/data/chapters'
 import { useProgressStore } from '@/stores/progress'
@@ -14,6 +14,7 @@ const progress = useProgressStore()
 const settings = useSettingsStore()
 
 const expandedChapters = ref<Set<string>>(new Set(['01-basics', '02-setup']))
+const searchInputEl = ref<HTMLInputElement>()
 const { query, results } = useContentSearch()
 const { setHighlight, clearHighlight } = useSearchHighlight()
 
@@ -68,6 +69,8 @@ function goTo(idx: number) {
   activeIdx.value = i
   setHighlight(query.value.trim())
   router.push(`/tutorial/${r.chapterId}/${r.stepId}`)
+  // Return focus to search input so keyboard shortcuts keep working
+  nextTick(() => searchInputEl.value?.focus())
 }
 
 function navNext() {
@@ -116,6 +119,7 @@ const displayPos = computed(() => activeIdx.value >= 0 ? activeIdx.value + 1 : 0
           <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
         </svg>
         <input
+          ref="searchInputEl"
           v-model="query"
           class="search-input"
           type="text"
