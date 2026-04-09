@@ -7,7 +7,7 @@ import { useSearchHighlight } from '@/composables/useSearchHighlight'
 
 const props = defineProps<{ content: string }>()
 
-const { highlightQuery } = useSearchHighlight()
+const { highlightQuery, highlightVersion } = useSearchHighlight()
 const contentEl = ref<HTMLElement>()
 
 let shiki: Awaited<ReturnType<typeof createHighlighter>> | null = null
@@ -131,8 +131,10 @@ function applyHighlight() {
 }
 
 // flush:'post' ensures the DOM is fully updated before we manipulate it
+// Watch highlightVersion (not highlightQuery value) so watcher fires even when
+// the same query is reused across multiple navigations
 watch(rendered, applyHighlight, { flush: 'post' })
-watch(highlightQuery, applyHighlight, { flush: 'post' })
+watch(highlightVersion, applyHighlight, { flush: 'post' })
 </script>
 
 <template>

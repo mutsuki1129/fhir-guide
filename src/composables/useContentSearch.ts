@@ -17,18 +17,46 @@ export interface SearchResult {
   snippet: string
 }
 
-function extractSnippet(content: string, query: string): string {
-  const lower = content.toLowerCase()
+/** Strip markdown syntax to get searchable plain text */
+function toPlainText(content: string): string {
+  return content
+    // Fenced code blocks: keep the code text (important for POST/GET etc.)
+    .replace(/```[^\n]*\n([\s\S]*?)```/g, ' $1 ')
+    // Inline code
+    .replace(/`([^`]+)`/g, ' $1 ')
+    // Images
+    .replace(/!\[[^\]]*\]\([^)]*\)/g, '')
+    // Links – keep label
+    .replace(/\[([^\]]+)\]\([^)]*\)/g, '$1')
+    // Headings
+    .replace(/^#{1,6}\s+/gm, '')
+    // Bold / italic
+    .replace(/[*_]{1,3}([^*_\n]+)[*_]{1,3}/g, '$1')
+    // Blockquote markers
+    .replace(/^>\s*/gm, '')
+    // HTML tags
+    .replace(/<[^>]+>/g, '')
+    // Collapse whitespace
+    .replace(/\s+/g, ' ')
+    .trim()
+}
+
+function extractSnippet(plainText: string, query: string): string {
+  const lower = plainText.toLowerCase()
   const idx = lower.indexOf(query.toLowerCase())
   if (idx === -1) return ''
-  const start = Math.max(0, idx - 35)
-  const end = Math.min(content.length, idx + query.length + 55)
-  let snip = content.slice(start, end)
-  // Strip markdown syntax for readability
-  snip = snip.replace(/```[\s\S]*?```/g, '').replace(/[#*`>\[\]!]/g, '').replace(/\s+/g, ' ').trim()
+  const start = Math.max(0, idx - 40)
+  const end = Math.min(plainText.length, idx + query.length + 60)
+  let snip = plainText.slice(start, end).trim()
   if (start > 0) snip = '…' + snip
-  if (end < content.length) snip = snip + '…'
+  if (end < plainText.length) snip = snip + '…'
   return snip
+}
+
+// Pre-compute plain text for each step (module-level cache, built once)
+const plainTextCache: Record<string, string> = {}
+for (const [path, raw] of Object.entries(contentModules)) {
+  plainTextCache[path] = toPlainText(raw)
 }
 
 export function useContentSearch() {
@@ -44,11 +72,11 @@ export function useContentSearch() {
     for (const chapter of chapters) {
       for (const step of chapter.steps) {
         const path = `/src/content/chapters/${step.contentPath}.md`
-        const content = contentModules[path] ?? ''
+        const plain = plainTextCache[path] ?? ''
         const titleMatch =
           step.title.toLowerCase().includes(qLower) ||
           chapter.title.toLowerCase().includes(qLower)
-        const contentMatch = content.toLowerCase().includes(qLower)
+        const contentMatch = plain.toLowerCase().includes(qLower)
 
         if (titleMatch || contentMatch) {
           matches.push({
@@ -57,7 +85,7 @@ export function useContentSearch() {
             chapterTitle: chapter.title,
             chapterIcon: chapter.icon,
             stepTitle: step.title,
-            snippet: contentMatch ? extractSnippet(content, q) : '',
+            snippet: contentMatch ? extractSnippet(plain, q) : '',
           })
         }
       }
