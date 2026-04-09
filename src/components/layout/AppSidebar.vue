@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { chapters } from '@/data/chapters'
 import { useProgressStore } from '@/stores/progress'
 import { useSettingsStore } from '@/stores/settings'
+import { useContentSearch } from '@/composables/useContentSearch'
 import ProgressTracker from '@/components/tutorial/ProgressTracker.vue'
 
 const route = useRoute()
@@ -12,7 +13,7 @@ const progress = useProgressStore()
 const settings = useSettingsStore()
 
 const expandedChapters = ref<Set<string>>(new Set(['01-basics', '02-setup']))
-const searchQuery = ref('')
+const { query, results, currentIndex, next, prev, current } = useContentSearch()
 
 function toggleChapter(id: string) {
   if (expandedChapters.value.has(id)) {
@@ -30,46 +31,50 @@ function chapterHasActive(chapterId: string) {
   return route.params.chapterId === chapterId
 }
 
-const isSearching = computed(() => searchQuery.value.trim().length > 0)
+const isSearching = computed(() => query.value.trim().length >= 2)
 
-const filteredChapters = computed(() => {
-  if (!isSearching.value) return chapters
-  const q = searchQuery.value.trim().toLowerCase()
-  return chapters
-    .map(chapter => {
-      const chapterMatches = chapter.title.toLowerCase().includes(q)
-      const matchingSteps = chapter.steps.filter(s => s.title.toLowerCase().includes(q))
-      if (!chapterMatches && matchingSteps.length === 0) return null
-      return { ...chapter, steps: chapterMatches ? chapter.steps : matchingSteps }
-    })
-    .filter(Boolean) as typeof chapters
+// When a new search starts, auto-expand chapters with results
+watch(results, (res) => {
+  if (res.length > 0) {
+    const ids = new Set(res.map(r => r.chapterId))
+    expandedChapters.value = ids
+  }
 })
 
 function highlightText(text: string) {
   if (!isSearching.value) return text
-  const q = searchQuery.value.trim()
-  const regex = new RegExp(`(${q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi')
-  return text.replace(regex, '<mark>$1</mark>')
+  const q = query.value.trim()
+  const escaped = q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+  return text.replace(new RegExp(`(${escaped})`, 'gi'), '<mark>$1</mark>')
 }
 
 function isChapterExpanded(id: string) {
-  if (isSearching.value) return true
   return expandedChapters.value.has(id)
 }
 
+function navigateToResult(r: ReturnType<typeof current>) {
+  if (!r) return
+  router.push(`/tutorial/${r.chapterId}/${r.stepId}`)
+}
+
 function onSearchEnter() {
-  if (!isSearching.value) return
-  const first = filteredChapters.value[0]
-  if (!first) return
-  const step = first.steps[0]
-  if (step) {
-    router.push(`/tutorial/${first.id}/${step.id}`)
-    searchQuery.value = ''
-  }
+  if (!isSearching.value || results.value.length === 0) return
+  navigateToResult(current())
+  next()
+}
+
+function onSearchKeydown(e: KeyboardEvent) {
+  if (e.key === 'ArrowDown') { e.preventDefault(); next() }
+  if (e.key === 'ArrowUp') { e.preventDefault(); prev() }
 }
 
 function clearSearch() {
-  searchQuery.value = ''
+  query.value = ''
+}
+
+function selectResult(idx: number) {
+  currentIndex.value = idx
+  navigateToResult(results.value[idx])
 }
 </script>
 
@@ -80,36 +85,72 @@ function clearSearch() {
         <span class="sidebar-title">章節目錄</span>
         <span class="chapters-count">{{ chapters.length }} 章</span>
       </div>
-      <div class="search-box">
+
+      <!-- Search box -->
+      <div class="search-box" :class="{ active: isSearching }">
         <svg class="search-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
         </svg>
         <input
-          v-model="searchQuery"
+          v-model="query"
           class="search-input"
           type="text"
-          placeholder="搜尋章節...（Enter 跳轉）"
+          placeholder="搜尋內容… Enter 跳轉 ↑↓ 切換"
           @keydown.enter="onSearchEnter"
           @keydown.escape="clearSearch"
+          @keydown="onSearchKeydown"
         />
-        <button v-if="isSearching" class="search-clear" @click="clearSearch">
+        <button v-if="isSearching" class="search-clear" @click="clearSearch" title="清除 (Esc)">
           <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
             <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
           </svg>
         </button>
       </div>
-      <div v-if="isSearching && filteredChapters.length === 0" class="search-empty">
-        無符合結果
+
+      <!-- Search results counter -->
+      <div v-if="isSearching" class="search-status">
+        <template v-if="results.length > 0">
+          <span class="result-counter">{{ currentIndex + 1 }} / {{ results.length }} 個結果</span>
+          <div class="nav-hints">
+            <button class="nav-btn" @click="prev" title="上一個">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="18 15 12 9 6 15"/></svg>
+            </button>
+            <button class="nav-btn" @click="() => { navigateToResult(current()); next() }" title="下一個 (Enter)">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+          </div>
+        </template>
+        <span v-else class="no-results">無符合結果</span>
       </div>
-      <nav class="chapter-nav">
-        <div v-for="chapter in filteredChapters" :key="chapter.id" class="chapter-group">
+
+      <!-- Search results list -->
+      <div v-if="isSearching && results.length > 0" class="search-results">
+        <button
+          v-for="(r, idx) in results"
+          :key="`${r.chapterId}/${r.stepId}`"
+          class="result-item"
+          :class="{ 'result-current': idx === currentIndex }"
+          @click="selectResult(idx)"
+        >
+          <div class="result-meta">
+            <span class="result-chapter-icon">{{ r.chapterIcon }}</span>
+            <span class="result-chapter-name" v-html="highlightText(r.chapterTitle)"></span>
+          </div>
+          <div class="result-step" v-html="highlightText(r.stepTitle)"></div>
+          <div v-if="r.snippet" class="result-snippet" v-html="highlightText(r.snippet)"></div>
+        </button>
+      </div>
+
+      <!-- Normal chapter nav (hidden while searching) -->
+      <nav v-if="!isSearching" class="chapter-nav">
+        <div v-for="chapter in chapters" :key="chapter.id" class="chapter-group">
           <button
             class="chapter-header"
             :class="{ active: chapterHasActive(chapter.id) }"
             @click="toggleChapter(chapter.id)"
           >
             <span class="chapter-icon">{{ chapter.icon }}</span>
-            <span class="chapter-title" v-html="highlightText(chapter.title)"></span>
+            <span class="chapter-title">{{ chapter.title }}</span>
             <svg
               class="chevron"
               :class="{ open: isChapterExpanded(chapter.id) }"
@@ -126,7 +167,6 @@ function clearSearch() {
                 :to="`/tutorial/${chapter.id}/${step.id}`"
                 class="step-link"
                 :class="{ active: isActiveStep(chapter.id, step.id) }"
-                @click="clearSearch"
               >
                 <span class="step-check">
                   <svg v-if="progress.isCompleted(chapter.id, step.id)" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="3">
@@ -134,12 +174,13 @@ function clearSearch() {
                   </svg>
                   <span v-else class="step-dot"></span>
                 </span>
-                <span class="step-title" v-html="highlightText(step.title)"></span>
+                <span class="step-title">{{ step.title }}</span>
               </router-link>
             </div>
           </Transition>
         </div>
       </nav>
+
       <div class="sidebar-footer">
         <ProgressTracker />
       </div>
@@ -149,7 +190,7 @@ function clearSearch() {
 
 <style scoped>
 .sidebar {
-  width: 260px;
+  width: 280px;
   flex-shrink: 0;
   background: var(--bg-deep);
   border-right: 1px solid var(--border-color);
@@ -159,25 +200,102 @@ function clearSearch() {
   flex-direction: column;
 }
 .sidebar.collapsed { width: 0; opacity: 0; }
-.sidebar-inner { width: 260px; overflow-y: auto; height: 100%; display: flex; flex-direction: column; }
-.chapter-nav { flex: 1; }
+.sidebar-inner { width: 280px; overflow-y: auto; height: 100%; display: flex; flex-direction: column; }
 .sidebar-header {
   padding: 0.875rem 1rem 0.5rem;
   display: flex; align-items: center; justify-content: space-between;
   border-bottom: 1px solid var(--border-color);
+  flex-shrink: 0;
 }
 .sidebar-title { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); font-weight: 600; }
 .chapters-count { font-size: 0.7rem; color: var(--border-subtle); font-family: 'JetBrains Mono', monospace; }
 
-.chapter-nav { padding: 0.5rem 0; }
-.chapter-group { margin-bottom: 2px; }
+/* Search box */
+.search-box {
+  display: flex; align-items: center; gap: 6px;
+  margin: 0.5rem 0.75rem 0.25rem;
+  padding: 6px 8px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  transition: border-color 0.15s;
+  flex-shrink: 0;
+}
+.search-box:focus-within, .search-box.active { border-color: var(--color-primary); }
+.search-icon { color: var(--text-muted); flex-shrink: 0; }
+.search-input {
+  flex: 1; background: none; border: none; outline: none;
+  font-size: 0.73rem; color: var(--text-primary);
+  font-family: inherit; min-width: 0;
+}
+.search-input::placeholder { color: var(--text-muted); font-size: 0.7rem; }
+.search-clear {
+  background: none; border: none; cursor: pointer; padding: 2px;
+  color: var(--text-muted); display: flex; align-items: center;
+  border-radius: 3px; flex-shrink: 0;
+}
+.search-clear:hover { color: var(--text-primary); background: var(--border-color); }
 
+/* Search status bar */
+.search-status {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 3px 0.75rem 4px;
+  flex-shrink: 0;
+}
+.result-counter { font-size: 0.68rem; color: var(--text-muted); font-family: 'JetBrains Mono', monospace; }
+.no-results { font-size: 0.7rem; color: var(--text-muted); }
+.nav-hints { display: flex; gap: 3px; }
+.nav-btn {
+  background: var(--bg-elevated); border: 1px solid var(--border-color);
+  border-radius: 4px; padding: 3px 5px; cursor: pointer;
+  color: var(--text-dim); display: flex; align-items: center;
+  transition: color 0.1s, background 0.1s;
+}
+.nav-btn:hover { color: var(--text-primary); background: var(--border-color); }
+
+/* Search results */
+.search-results {
+  flex: 1; overflow-y: auto;
+  border-top: 1px solid var(--border-color);
+  padding: 4px 0;
+}
+.result-item {
+  width: 100%; background: none; border: none; cursor: pointer;
+  text-align: left; padding: 7px 10px;
+  border-bottom: 1px solid var(--border-color);
+  transition: background 0.12s;
+}
+.result-item:hover { background: var(--bg-elevated); }
+.result-item.result-current { background: rgba(59, 130, 246, 0.1); border-left: 2px solid var(--color-primary); padding-left: 8px; }
+.result-meta {
+  display: flex; align-items: center; gap: 4px;
+  margin-bottom: 2px;
+}
+.result-chapter-icon { font-size: 0.75rem; }
+.result-chapter-name { font-size: 0.65rem; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.result-step { font-size: 0.78rem; color: var(--text-secondary); font-weight: 500; line-height: 1.3; margin-bottom: 2px; }
+.result-snippet {
+  font-size: 0.67rem; color: var(--text-muted); line-height: 1.4;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+}
+
+/* Highlight marks */
+:deep(mark) {
+  background: rgba(59, 130, 246, 0.28);
+  color: var(--color-primary);
+  border-radius: 2px;
+  padding: 0 1px;
+  font-style: normal;
+}
+
+/* Normal nav */
+.chapter-nav { flex: 1; padding: 0.5rem 0; }
+.chapter-group { margin-bottom: 2px; }
 .chapter-header {
   width: 100%; background: none; border: none; cursor: pointer;
   display: flex; align-items: center; gap: 8px;
   padding: 7px 12px; text-align: left; color: var(--text-secondary);
   font-size: 0.8rem; font-weight: 500; transition: color 0.15s, background 0.15s;
-  border-radius: 0;
 }
 .chapter-header:hover { color: var(--text-primary); background: var(--bg-elevated); }
 .chapter-header.active { color: var(--color-primary); }
@@ -194,49 +312,15 @@ function clearSearch() {
   transition: color 0.15s, background 0.15s;
 }
 .step-link:hover { color: var(--text-primary); background: var(--bg-elevated); }
-.step-link.active { color: var(--color-primary); background: rgba(59,130,246,0.08); }
-.step-link.router-link-active { color: var(--color-primary); background: rgba(59,130,246,0.08); }
+.step-link.active, .step-link.router-link-active { color: var(--color-primary); background: rgba(59,130,246,0.08); }
 
 .step-check { width: 14px; height: 14px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
 .step-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--border-subtle); display: block; }
 .step-title { flex: 1; line-height: 1.4; }
 
-.search-box {
-  display: flex; align-items: center; gap: 6px;
-  margin: 0.5rem 0.75rem 0.25rem;
-  padding: 5px 8px;
-  background: var(--bg-elevated);
-  border: 1px solid var(--border-color);
-  border-radius: 6px;
-  transition: border-color 0.15s;
-}
-.search-box:focus-within { border-color: var(--color-primary); }
-.search-icon { color: var(--text-muted); flex-shrink: 0; }
-.search-input {
-  flex: 1; background: none; border: none; outline: none;
-  font-size: 0.75rem; color: var(--text-primary);
-  font-family: inherit; min-width: 0;
-}
-.search-input::placeholder { color: var(--text-muted); }
-.search-clear {
-  background: none; border: none; cursor: pointer; padding: 2px;
-  color: var(--text-muted); display: flex; align-items: center;
-  border-radius: 3px; flex-shrink: 0;
-}
-.search-clear:hover { color: var(--text-primary); background: var(--border-color); }
-.search-empty {
-  font-size: 0.75rem; color: var(--text-muted);
-  text-align: center; padding: 1rem 0.75rem;
-}
-:deep(mark) {
-  background: rgba(59, 130, 246, 0.25);
-  color: var(--color-primary);
-  border-radius: 2px;
-  padding: 0 1px;
-}
 .sidebar-footer { padding: 0.75rem; border-top: 1px solid var(--border-color); flex-shrink: 0; }
 
 /* Accordion animation */
-.accordion-enter-active, .accordion-leave-active { transition: max-height 0.25s ease, opacity 0.25s ease; overflow: hidden; max-height: 400px; }
+.accordion-enter-active, .accordion-leave-active { transition: max-height 0.25s ease, opacity 0.25s ease; overflow: hidden; max-height: 500px; }
 .accordion-enter-from, .accordion-leave-to { max-height: 0; opacity: 0; }
 </style>
