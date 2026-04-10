@@ -201,10 +201,6 @@ const activeSection = ref('resources')
 .ref-table code { font-family: 'Fira Code', monospace; font-size: 0.8rem; background: var(--border-color); padding: 1px 5px; border-radius: 3px; color: #7dd3fc; }
 .example-code { font-size: 0.75rem; color: var(--text-secondary); }
 
-:global(html.light) .ref-table code { color: #000000; background: rgba(0,0,0,0.07); }
-:global(html.light) .example-code { color: #9b1c1c; }
-:global(html.light) .op-example { color: #1e3a8a; }
-:global(html.light) .term-name { color: #14532d; }
 .type-badge { background: rgba(59,130,246,0.1); color: #60a5fa; font-size: 0.7rem; padding: 1px 6px; border-radius: 3px; font-family: 'JetBrains Mono', monospace; }
 
 .ops-list { display: flex; flex-direction: column; gap: 10px; }
