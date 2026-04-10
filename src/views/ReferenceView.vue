@@ -198,8 +198,8 @@ const activeSection = ref('resources')
 .ref-table th { background: var(--bg-panel); color: var(--text-secondary); padding: 10px 12px; text-align: left; border-bottom: 1px solid var(--border-color); font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; }
 .ref-table td { padding: 9px 12px; border-bottom: 1px solid var(--border-color); color: var(--text-secondary); vertical-align: top; }
 .ref-table tr:hover td { background: var(--bg-elevated); }
-.ref-table code { font-family: 'Fira Code', monospace; font-size: 0.8rem; background: var(--border-color); padding: 1px 5px; border-radius: 3px; color: var(--ref-param-color, #7dd3fc); }
-.example-code { font-size: 0.75rem; color: var(--ref-example-color, var(--text-secondary)); }
+.ref-table code:not(.example-code) { font-family: 'Fira Code', monospace; font-size: 0.8rem; background: var(--border-color); padding: 1px 5px; border-radius: 3px; color: var(--ref-param-color, #7dd3fc); }
+.example-code { font-family: 'Fira Code', monospace; font-size: 0.75rem; color: var(--ref-example-color, #7dd3fc); background: var(--border-color); padding: 1px 5px; border-radius: 3px; }
 
 .type-badge { background: rgba(59,130,246,0.1); color: #60a5fa; font-size: 0.7rem; padding: 1px 6px; border-radius: 3px; font-family: 'JetBrains Mono', monospace; }
 
