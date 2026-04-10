@@ -198,8 +198,8 @@ const activeSection = ref('resources')
 .ref-table th { background: var(--bg-panel); color: var(--text-secondary); padding: 10px 12px; text-align: left; border-bottom: 1px solid var(--border-color); font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; }
 .ref-table td { padding: 9px 12px; border-bottom: 1px solid var(--border-color); color: var(--text-secondary); vertical-align: top; }
 .ref-table tr:hover td { background: var(--bg-elevated); }
-.ref-table code { font-family: 'Fira Code', monospace; font-size: 0.8rem; background: var(--border-color); padding: 1px 5px; border-radius: 3px; color: #7dd3fc; }
-.example-code { font-size: 0.75rem; color: var(--text-secondary); }
+.ref-table code { font-family: 'Fira Code', monospace; font-size: 0.8rem; background: var(--border-color); padding: 1px 5px; border-radius: 3px; color: var(--ref-param-color, #7dd3fc); }
+.example-code { font-size: 0.75rem; color: var(--ref-example-color, var(--text-secondary)); }
 
 .type-badge { background: rgba(59,130,246,0.1); color: #60a5fa; font-size: 0.7rem; padding: 1px 6px; border-radius: 3px; font-family: 'JetBrains Mono', monospace; }
 
@@ -209,12 +209,12 @@ const activeSection = ref('resources')
 .op-name { font-family: 'Fira Code', monospace; font-size: 0.9rem; font-weight: 600; color: #c084fc; }
 .op-scope { background: rgba(192,132,252,0.08); color: #c084fc; font-size: 0.7rem; padding: 1px 7px; border-radius: 3px; border: 1px solid rgba(192,132,252,0.2); }
 .op-desc { font-size: 0.825rem; color: var(--text-dim); margin: 0 0 8px; }
-.op-example { display: block; font-family: 'Fira Code', monospace; font-size: 0.8rem; color: #7dd3fc; background: var(--bg-deep); padding: 6px 10px; border-radius: 5px; }
+.op-example { display: block; font-family: 'Fira Code', monospace; font-size: 0.8rem; color: var(--ref-op-example-color, #7dd3fc); background: var(--bg-deep); padding: 6px 10px; border-radius: 5px; }
 
 .term-list { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; }
 .term-card { background: var(--bg-panel); border: 1px solid var(--border-color); border-radius: 8px; padding: 1rem; }
 .term-header { margin-bottom: 4px; }
-.term-name { font-family: 'JetBrains Mono', monospace; font-size: 0.875rem; font-weight: 700; color: #4ade80; }
+.term-name { font-family: 'JetBrains Mono', monospace; font-size: 0.875rem; font-weight: 700; color: var(--ref-term-name-color, #4ade80); }
 .term-url { display: block; font-size: 0.72rem; color: #60a5fa; font-family: 'Fira Code', monospace; margin-bottom: 6px; word-break: break-all; }
 .term-usage { font-size: 0.8rem; color: var(--text-dim); margin: 0 0 4px; }
 .term-example { font-size: 0.775rem; color: var(--text-muted); margin: 0; }
