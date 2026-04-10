@@ -228,9 +228,10 @@ defineExpose({ getHeaders, getBody, setBody, setTab: (t: 'headers' | 'body') => 
 .body-monaco { height: 100%; }
 .expand-btn {
   margin-left: auto; margin-right: 6px;
-  background: none; border: none; cursor: pointer;
-  color: var(--text-dim); font-size: 1rem; padding: 0 6px;
-  transition: color 0.15s; line-height: 1;
+  background: var(--color-primary); border: none; border-radius: 4px;
+  cursor: pointer; color: #fff; font-size: 0.8rem; padding: 2px 8px;
+  transition: opacity 0.15s; line-height: 1.6; font-weight: 600;
+  align-self: center;
 }
-.expand-btn:hover { color: var(--color-primary); }
+.expand-btn:hover { opacity: 0.8; }
 </style>
