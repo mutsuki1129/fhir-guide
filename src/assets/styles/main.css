@@ -87,9 +87,9 @@ html.light .terminal-block .filename {
 
 /* ReferenceView light mode overrides */
 html.light .ref-table code { color: #000000; background: rgba(0,0,0,0.07); }
-html.light .example-code { color: #9b1c1c; }
-html.light .op-example { color: #1e3a8a; }
-html.light .term-name { color: #14532d; }
+html.light .example-code { color: #ed0909; }
+html.light .op-example { color: #0a2dc7; }
+html.light .term-name { color: #0ecc04; }
 
 .terminal-block {
   background: var(--bg-code);
