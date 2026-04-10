@@ -15,6 +15,7 @@ const emit = defineEmits<{
 }>()
 
 const activeTab = ref<'headers' | 'body'>('headers')
+const isBodyExpanded = ref(false)
 
 const headers = ref([
   { key: 'Accept', value: 'application/fhir+json' },
@@ -120,6 +121,12 @@ defineExpose({ getHeaders, getBody, setBody, setTab: (t: 'headers' | 'body') => 
           :class="{ active: activeTab === 'body' }"
           @click="activeTab = 'body'"
         >Body</button>
+        <button
+          v-if="activeTab === 'body'"
+          class="expand-btn"
+          :title="isBodyExpanded ? '縮小' : '展開'"
+          @click="isBodyExpanded = !isBodyExpanded"
+        >{{ isBodyExpanded ? '⊟' : '⊞' }}</button>
       </div>
       <div class="tab-content">
         <div v-show="activeTab === 'headers'" class="headers-editor">
@@ -130,7 +137,7 @@ defineExpose({ getHeaders, getBody, setBody, setTab: (t: 'headers' | 'body') => 
           </div>
           <button class="add-header-btn" @click="addHeader">+ 新增 Header</button>
         </div>
-        <div v-show="activeTab === 'body'" class="body-editor">
+        <div v-show="activeTab === 'body'" class="body-editor" :class="{ expanded: isBodyExpanded }">
           <div ref="bodyContainer" class="body-monaco"></div>
         </div>
       </div>
@@ -216,6 +223,14 @@ defineExpose({ getHeaders, getBody, setBody, setTab: (t: 'headers' | 'body') => 
   cursor: pointer; transition: all 0.15s;
 }
 .add-header-btn:hover { border-color: var(--border-subtle); color: var(--text-secondary); }
-.body-editor { height: 120px; }
+.body-editor { height: 120px; transition: height 0.2s ease; }
+.body-editor.expanded { height: 360px; }
 .body-monaco { height: 100%; }
+.expand-btn {
+  margin-left: auto; margin-right: 6px;
+  background: none; border: none; cursor: pointer;
+  color: var(--text-dim); font-size: 1rem; padding: 0 6px;
+  transition: color 0.15s; line-height: 1;
+}
+.expand-btn:hover { color: var(--color-primary); }
 </style>
